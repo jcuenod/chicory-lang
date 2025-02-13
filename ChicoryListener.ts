@@ -15,14 +15,34 @@ export class ChicoryParserListener implements ChicoryListener {
         this.output += assignKwd + " " + identifier + ' = ';
     }
 
-    enterLiteral(ctx: parser.LiteralContext){
-        const literal = ctx.getText();
-        this.output += literal;
+    enterTailExpr(ctx: parser.TailExprContext) {
+        // we handle these individually as named expressions
     }
 
-    enterOperation(ctx: parser.OperationContext){
-        this.output += " " + ctx.getText() + " ";
+    enterLiteralExpr(ctx: parser.LiteralExprContext) {
+        this.output += ctx.getText();
     }
+
+    enterIdentifierExpr(ctx: parser.IdentifierExprContext) {
+        this.output += ctx.getText();
+    }
+
+    enterOperation(ctx: parser.OperationContext) {
+        this.output += " " + ctx.OPERATOR().getText() + " ";
+    } 
+
+    enterMemberExpr(ctx: parser.MemberExprContext) {
+        this.output += "." + ctx.IDENTIFIER().getText();
+    } 
+
+    enterIndexExpr(ctx: parser.IndexExprContext) {
+        this.output += "["
+    }
+    exitIndexExpr(ctx: parser.IndexExprContext) {
+        this.output += "]"
+    }
+
+
 
     visitTerminal(){}
     visitErrorNode(){}

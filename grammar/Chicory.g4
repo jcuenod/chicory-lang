@@ -16,17 +16,15 @@ assignStmt
 expr: primaryExpr tailExpr*; 
 
 primaryExpr
-    : literal
+    : IDENTIFIER        #IdentifierExpr
+    | literal           #LiteralExpr
     ;
 
 tailExpr
-    : operation expr
+    : '.' IDENTIFIER    #MemberExpr
+    | '[' expr ']'      #IndexExpr
+    | OPERATOR expr     #Operation
     ;
-
-operation
-    : OPERATOR
-    ;
-
 
 assignKwd
     : LET_KWD
