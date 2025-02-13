@@ -13,8 +13,18 @@ assignStmt
     : assignKwd IDENTIFIER '=' expr
     ;
 
-expr
+expr: primaryExpr tailExpr*; 
+
+primaryExpr
     : literal
+    ;
+
+tailExpr
+    : operation expr
+    ;
+
+operation
+    : OPERATOR
     ;
 
 
@@ -39,6 +49,8 @@ TRUE_KWD: 'true';
 FALSE_KWD: 'false';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
+
+OPERATOR: '+' | '-' | '*' | '/' | '==' | '!=';
 
 // TODO: Handle escaping
 STRING: '"' (~["\n])* '"';

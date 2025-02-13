@@ -20,6 +20,10 @@ export class ChicoryParserListener implements ChicoryListener {
         this.output += literal;
     }
 
+    enterOperation(ctx: parser.OperationContext){
+        this.output += " " + ctx.getText() + " ";
+    }
+
     visitTerminal(){}
     visitErrorNode(){}
     enterEveryRule(){}

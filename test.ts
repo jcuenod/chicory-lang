@@ -1,7 +1,8 @@
 import compile from "./compile";
 
 const tests = [
-    './tests/1. assignments'
+    './tests/1. assignments',
+    './tests/2. operations'
 ]
 
 tests.forEach(async path => {
