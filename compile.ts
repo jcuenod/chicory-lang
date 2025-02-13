@@ -3,7 +3,6 @@ import { ChicoryLexer } from './generated/ChicoryLexer';
 import { ChicoryParser } from './generated/ChicoryParser';
 import { ChicoryParserListener } from './ChicoryListener';
 
-const listener = new ChicoryParserListener();
 
 export default (source: string) => {
     let inputStream = CharStream.fromString(source);
@@ -12,7 +11,7 @@ export default (source: string) => {
     let parser = new ChicoryParser(tokenStream);
     let tree = parser.program();
     
+    const listener = new ChicoryParserListener();
     ParseTreeWalker.DEFAULT.walk(listener, tree);
-    
     return listener.getOutput();
 }
