@@ -5,8 +5,9 @@ const tests = [
 ]
 
 tests.forEach(async path => {
-    console.log(`Running test: ${path}`);
     const {source, compiled} = await import(path)
+    
+    console.log(`Running test: ${path}`);
     const compiledOutput = compile(source);
 
     if (compiledOutput.trim() === compiled.trim()){
