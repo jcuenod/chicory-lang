@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -listener -Xexact-output-dir grammar/Chicory.g4",
-    "compile": "npx tsx ./compile.ts",
-    "start": "npm run antlr && npm run compile"
+    "test": "npx tsx ./test.ts",
+    "start": "npm run antlr && npm run test"
   },
   "keywords": [],
   "author": "",
