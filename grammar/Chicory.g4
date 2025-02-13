@@ -16,7 +16,8 @@ assignStmt
 expr: primaryExpr tailExpr*; 
 
 primaryExpr
-    : IDENTIFIER        #IdentifierExpr
+    : ifExpr            #IfElseExpr
+    | IDENTIFIER        #IdentifierExpr
     | literal           #LiteralExpr
     ;
 
@@ -24,6 +25,21 @@ tailExpr
     : '.' IDENTIFIER    #MemberExpr
     | '[' expr ']'      #IndexExpr
     | OPERATOR expr     #Operation
+    ;
+
+ifExpr
+    : justIfExpr                                            #BareIfExpr
+    | justIfExpr ('else' blockExpr)                         #IfWithElseExpr
+    | justIfExpr ('else' justIfExpr)* 'else' justIfExpr     #IfElseIfExpr
+    | justIfExpr ('else' justIfExpr)* ('else' blockExpr)    #IfWithElseExpr
+    ;
+
+justIfExpr
+    : 'if' '(' expr ')' blockExpr
+    ;
+
+blockExpr
+    : '{' NL* stmt (NL* stmt)* NL* expr? NL* '}'
     ;
 
 assignKwd

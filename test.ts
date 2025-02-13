@@ -2,7 +2,9 @@ import compile from "./compile";
 
 const tests = [
     './tests/1. assignments',
-    './tests/2. operations'
+    './tests/2. operations',
+    './tests/3. member expressions',
+    './tests/4. if expressions',
 ]
 
 tests.forEach(async path => {
