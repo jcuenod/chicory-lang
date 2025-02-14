@@ -27,12 +27,7 @@ tailExpr
     | OPERATOR expr     #Operation
     ;
 
-ifExpr
-    : justIfExpr                                            #BareIfExpr
-    | justIfExpr ('else' blockExpr)                         #IfWithElseExpr
-    | justIfExpr ('else' justIfExpr)* 'else' justIfExpr     #IfElseIfExpr
-    | justIfExpr ('else' justIfExpr)* ('else' blockExpr)    #IfWithElseExpr
-    ;
+ifExpr: justIfExpr ('else' justIfExpr)* ('else' blockExpr)?;
 
 justIfExpr
     : 'if' '(' expr ')' blockExpr
