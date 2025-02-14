@@ -7,6 +7,7 @@ const tests = [
     './tests/4. if expressions',
     './tests/5. function expressions',
     './tests/6. match expressions',
+    './tests/7. call expressions'
 ]
 
 tests.forEach(async path => {

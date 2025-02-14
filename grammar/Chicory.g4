@@ -16,7 +16,8 @@ assignStmt
 expr: primaryExpr tailExpr*; 
 
 primaryExpr
-    : ifExpr            #IfExpression
+    : '(' expr ')'      #ParenExpression
+    | ifExpr            #IfExpression
     | funcExpr          #FunctionExpression
     | matchExpr         #MatchExpression
     | IDENTIFIER        #IdentifierExpression
@@ -26,6 +27,7 @@ primaryExpr
 tailExpr
     : '.' IDENTIFIER    #MemberExpression
     | '[' expr ']'      #IndexExpression
+    | callExpr          #CallExpression
     | OPERATOR expr     #OperationExpression
     ;
 
@@ -41,6 +43,10 @@ funcExpr
 
 parameterList
     : IDENTIFIER (',' IDENTIFIER)*
+    ;
+
+callExpr
+    : '(' NL* (expr (',' NL* expr)*)? NL* ')'
     ;
 
 matchExpr

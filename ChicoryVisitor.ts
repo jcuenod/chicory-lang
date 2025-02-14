@@ -44,9 +44,14 @@ export class ChicoryParserVisitor {
     visitTailExpr(ctx: parser.TailExprContext) {
         if (ctx.ruleContext instanceof parser.MemberExpressionContext) {
             return this.visitMemberExpr(ctx as parser.MemberExpressionContext);
-        } else if (ctx.ruleContext instanceof parser.IndexExpressionContext) {
+        }
+        else if (ctx.ruleContext instanceof parser.IndexExpressionContext) {
             return this.visitIndexExpr(ctx as parser.IndexExpressionContext);
-        } else if (ctx.ruleContext instanceof parser.OperationExpressionContext) {
+        }
+        else if (ctx.ruleContext instanceof parser.CallExpressionContext) {
+            return this.visitCallExpr((ctx as parser.CallExpressionContext).callExpr());
+        }
+        else if (ctx.ruleContext instanceof parser.OperationExpressionContext) {
             return this.visitOperation(ctx as parser.OperationExpressionContext);
         }
         throw new Error("Unknown tail expression type");
@@ -66,7 +71,10 @@ export class ChicoryParserVisitor {
     
     visitPrimaryExpr(ctx: parser.PrimaryExprContext) {
         const child = ctx.getChild(0);
-        if (child instanceof parser.IfExprContext) {
+        if (ctx instanceof parser.ParenExpressionContext) {
+            return '(' + this.visitExpr((ctx as parser.ParenExpressionContext).expr()) + ')';
+        }
+        else if (child instanceof parser.IfExprContext) {
             return this.visitIfElseExpr(child);
         }
         else if (child instanceof parser.FuncExprContext) {
@@ -81,6 +89,8 @@ export class ChicoryParserVisitor {
         else if (child instanceof parser.LiteralContext) {
             return this.visitLiteral(child);
         }
+        console.log(ctx.ruleContext);
+        console.log(child);
         throw new Error("Unknown primary expression type");
     }
 
@@ -105,6 +115,13 @@ export class ChicoryParserVisitor {
 
     visitParameterList(ctx: parser.ParameterListContext) {
         return ctx.IDENTIFIER().map(id => id.getText()).join(", ");
+    }
+
+    visitCallExpr(ctx: parser.CallExprContext) {
+        const args = ctx.expr() 
+            ? ctx.expr()!.map(expr => this.visitExpr(expr)).join(", ")
+            : "";
+        return `(${args})`;
     }
 
     visitMatchExpr(ctx: parser.MatchExprContext) {
