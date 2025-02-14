@@ -1,4 +1,5 @@
-import compile from "./compile";
+// import compile from "./compile";
+import {parseAndBuildAST} from "./AstBuilder";
 
 const tests = [
     './tests/1. assignments',
@@ -11,16 +12,17 @@ tests.forEach(async path => {
     const {source, compiled} = await import(path)
     
     console.log(`Running test: ${path}`);
-    const compiledOutput = compile(source);
+    const compiledOutput = parseAndBuildAST(source);
 
-    if (compiledOutput.trim() === compiled.trim()){
-        console.log(' - Test passed\n');
-    }
-    else {
-        console.log(' - Test failed');
-        console.log(' - Expected:');
-        console.log(compiled);
-        console.log(' - Got:');
-        console.log(compiledOutput + '\n');
-    }
+    console.log(JSON.stringify(compiledOutput, null, 2));
+    // if (compiledOutput.trim() === compiled.trim()){
+    //     console.log(' - Test passed\n');
+    // }
+    // else {
+    //     console.log(' - Test failed');
+    //     console.log(' - Expected:');
+    //     console.log(compiled);
+    //     console.log(' - Got:');
+    //     console.log(compiledOutput + '\n');
+    // }
 })
