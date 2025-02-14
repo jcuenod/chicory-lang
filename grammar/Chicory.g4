@@ -17,6 +17,7 @@ expr: primaryExpr tailExpr*;
 
 primaryExpr
     : ifExpr            #IfElseExpr
+    | funcExpr          #FunctionExpr
     | IDENTIFIER        #IdentifierExpr
     | literal           #LiteralExpr
     ;
@@ -33,8 +34,16 @@ justIfExpr
     : 'if' '(' expr ')' blockExpr
     ;
 
+funcExpr
+    : '(' NL* parameterList? NL* ')' '=>' blockExpr
+    ;
+
+parameterList
+    : IDENTIFIER (',' IDENTIFIER)*
+    ;
+
 blockExpr
-    : '{' NL* stmt (NL* stmt)* NL* expr? NL* '}'
+    : '{' NL* stmt (NL* stmt)* NL* '}'
     ;
 
 assignKwd

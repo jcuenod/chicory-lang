@@ -7,11 +7,11 @@ export const source = `
 
 export const compiled = `
 () => {
-    let a = 1
-    return a ? (() => {
+    let a = 1;
+    return (a) ? (() => {
         return "1";
     })() : (() => {
         return "2";
     })();
-}
+};
 `

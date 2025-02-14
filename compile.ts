@@ -1,7 +1,7 @@
 import { CharStream, CommonTokenStream, ParseTreeWalker } from 'antlr4ng';
 import { ChicoryLexer } from './generated/ChicoryLexer';
 import { ChicoryParser } from './generated/ChicoryParser';
-import { ChicoryParserListener } from './ChicoryListener';
+import { ChicoryParserVisitor } from './ChicoryVisitor';
 
 
 export default (source: string) => {
@@ -11,7 +11,6 @@ export default (source: string) => {
     let parser = new ChicoryParser(tokenStream);
     let tree = parser.program();
     
-    const listener = new ChicoryParserListener();
-    ParseTreeWalker.DEFAULT.walk(listener, tree);
-    return listener.getOutput();
+    const visitor = new ChicoryParserVisitor();
+    return visitor.getOutput(tree);
 }

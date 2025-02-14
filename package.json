@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -listener -Xexact-output-dir grammar/Chicory.g4",
+    "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "npx tsx ./test.ts",
     "start": "npm run antlr && npm run test"
   },
