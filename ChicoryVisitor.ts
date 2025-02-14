@@ -2,6 +2,9 @@ import { ParserRuleContext } from 'antlr4ng';
 import * as parser from './generated/ChicoryParser';
 import { ChicoryVisitor } from './generated/ChicoryVisitor';
 
+let i = 0;
+const getUniqueChicoryVariableName = () => `__chicory_var_${i++}`;
+
 export class ChicoryParserVisitor {
     private indentLevel: number = 0;
 
@@ -39,25 +42,25 @@ export class ChicoryParserVisitor {
     }
 
     visitTailExpr(ctx: parser.TailExprContext) {
-        if (ctx.ruleContext instanceof parser.MemberExprContext) {
-            return this.visitMemberExpr(ctx as parser.MemberExprContext);
-        } else if (ctx.ruleContext instanceof parser.IndexExprContext) {
-            return this.visitIndexExpr(ctx as parser.IndexExprContext);
-        } else if (ctx.ruleContext instanceof parser.OperationContext) {
-            return this.visitOperation(ctx as parser.OperationContext);
+        if (ctx.ruleContext instanceof parser.MemberExpressionContext) {
+            return this.visitMemberExpr(ctx as parser.MemberExpressionContext);
+        } else if (ctx.ruleContext instanceof parser.IndexExpressionContext) {
+            return this.visitIndexExpr(ctx as parser.IndexExpressionContext);
+        } else if (ctx.ruleContext instanceof parser.OperationExpressionContext) {
+            return this.visitOperation(ctx as parser.OperationExpressionContext);
         }
         throw new Error("Unknown tail expression type");
     }
 
-    visitMemberExpr(ctx: parser.MemberExprContext) {
+    visitMemberExpr(ctx: parser.MemberExpressionContext) {
         return '.' + ctx.IDENTIFIER().getText();
     }
 
-    visitIndexExpr(ctx: parser.IndexExprContext) {
+    visitIndexExpr(ctx: parser.IndexExpressionContext) {
         return '[' + this.visitExpr(ctx.expr()!) + ']';
     }
 
-    visitOperation(ctx: parser.OperationContext) {
+    visitOperation(ctx: parser.OperationExpressionContext) {
         return " " + ctx.OPERATOR().getText() + " " + this.visitExpr(ctx.expr()!);
     }
     
@@ -69,7 +72,10 @@ export class ChicoryParserVisitor {
         else if (child instanceof parser.FuncExprContext) {
             return this.visitFuncExpr(child);
         }
-        else if (ctx.ruleContext instanceof parser.IdentifierExprContext) {
+        else if (child instanceof parser.MatchExprContext) {
+            return this.visitMatchExpr(child);
+        }
+        else if (ctx.ruleContext instanceof parser.IdentifierExpressionContext) {
             return this.visitIdentifier(child);
         } 
         else if (child instanceof parser.LiteralContext) {
@@ -101,14 +107,60 @@ export class ChicoryParserVisitor {
         return ctx.IDENTIFIER().map(id => id.getText()).join(", ");
     }
 
-    visitBlockExpr(ctx: parser.BlockExprContext, returnLastExpr = false) {
+    visitMatchExpr(ctx: parser.MatchExprContext) {
+        this.indentLevel++;
+        const expr = this.visitExpr(ctx.expr());
+        // TODO: explore passing the expression straight through, if it's just an identifier...
+        const varName = getUniqueChicoryVariableName();
+        const matchExpr = this.indent() + `const ${varName} = ${expr};`
+
+        const arms = ctx.matchArm().map((arm, i) => this.indent() + (i>0?"else ":"") + this.visitMatchArm(arm, varName));
+        const body = [
+            matchExpr,
+            ...arms
+        ]
+        this.indentLevel--;
+        return `(() => {\n${body.join("\n")}\n${this.indent()}})()`;
+    }
+
+    visitMatchArm(ctx: parser.MatchArmContext, varName: string) {
+        const {pattern, inject} = this.visitPattern(ctx.matchPattern(), varName);
+        const block = this.visitBlockExpr(ctx.blockExpr(), true, inject);
+        return `if (${pattern}) ${block}`;
+    }
+
+    visitPattern(ctx: parser.MatchPatternContext, varName: string) {
+        if (ctx.ruleContext instanceof parser.BareAdtMatchPatternContext) {
+            const adtName = (ctx as parser.BareAdtMatchPatternContext).IDENTIFIER().getText();
+            return { pattern: `${varName}.type === "${adtName}"` };
+        } else if (ctx.ruleContext instanceof parser.AdtWithParamMatchPatternContext) {
+            const [adtName, paramName] = (ctx as parser.AdtWithParamMatchPatternContext).IDENTIFIER().map(id => id.getText());
+            return { 
+                pattern: `${varName}.type === "${adtName}"`,
+                inject: `const ${paramName} = ${varName}.value`
+            };
+        } else if (ctx.ruleContext instanceof parser.AdtWithLiteralMatchPatternContext) {
+            const adtName = (ctx as parser.AdtWithLiteralMatchPatternContext).IDENTIFIER().getText();
+            const literalValue = this.visitLiteral((ctx as parser.AdtWithLiteralMatchPatternContext).literal())
+            return { pattern:`${varName}.type === "${adtName}" && ${varName}.value === ${literalValue}` };
+        } else if (ctx.ruleContext instanceof parser.WildcardMatchPatternContext) {
+            return { pattern: "true" };
+        } else if (ctx.ruleContext instanceof parser.LiteralMatchPatternContext) {
+            const literalValue = this.visitLiteral((ctx as parser.AdtWithLiteralMatchPatternContext).literal())
+            return { pattern: `${varName} === ${literalValue}` };
+        }
+        throw new Error("Unknown match arm pattern type");
+    }
+
+    visitBlockExpr(ctx: parser.BlockExprContext, returnLastExpr = false, inject = "") {
         this.indentLevel++;
         const stmts = ctx.stmt();
         if (stmts.length === 0) {
             return "";
         }
 
-        const block = stmts.map(stmt => this.indent() + this.visitStmt(stmt));      
+        const block = inject ? [this.indent() + inject] : []; 
+        block.push(...stmts.map(stmt => this.indent() + this.visitStmt(stmt)));     
         if (stmts[stmts.length - 1].expr() instanceof parser.ExprContext && returnLastExpr) {
             block.pop();
             const finalExpr = this.visitExpr(stmts[stmts.length - 1].expr()!);

@@ -16,16 +16,17 @@ assignStmt
 expr: primaryExpr tailExpr*; 
 
 primaryExpr
-    : ifExpr            #IfElseExpr
-    | funcExpr          #FunctionExpr
-    | IDENTIFIER        #IdentifierExpr
-    | literal           #LiteralExpr
+    : ifExpr            #IfExpression
+    | funcExpr          #FunctionExpression
+    | matchExpr         #MatchExpression
+    | IDENTIFIER        #IdentifierExpression
+    | literal           #LiteralExpression
     ;
 
 tailExpr
-    : '.' IDENTIFIER    #MemberExpr
-    | '[' expr ']'      #IndexExpr
-    | OPERATOR expr     #Operation
+    : '.' IDENTIFIER    #MemberExpression
+    | '[' expr ']'      #IndexExpression
+    | OPERATOR expr     #OperationExpression
     ;
 
 ifExpr: justIfExpr ('else' justIfExpr)* ('else' blockExpr)?;
@@ -40,6 +41,22 @@ funcExpr
 
 parameterList
     : IDENTIFIER (',' IDENTIFIER)*
+    ;
+
+matchExpr
+    : 'match' '(' expr ')' '{' NL* matchArm (',' NL* matchArm)* ','? NL* '}'
+    ;
+
+matchArm
+    : matchPattern '=>' blockExpr
+    ;
+
+matchPattern
+    : IDENTIFIER                    #BareAdtMatchPattern
+    | IDENTIFIER '(' IDENTIFIER ')' #AdtWithParamMatchPattern
+    | IDENTIFIER '(' literal ')'    #AdtWithLiteralMatchPattern
+    | '_'                           #WildcardMatchPattern
+    | literal                       #LiteralMatchPattern
     ;
 
 blockExpr
