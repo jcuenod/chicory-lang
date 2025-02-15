@@ -1,0 +1,9 @@
+let hello = (name) => {
+  match (name) {
+    "world" => { "Hello, WORLD!" },
+    _ => { "Hello, " + name + "!" }
+  }
+}
+
+console.log(hello("world"))
+console.log(hello("Chicory"))

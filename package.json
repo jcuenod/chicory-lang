@@ -6,12 +6,16 @@
   "scripts": {
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "npx tsx ./test.ts",
-    "start": "npm run antlr && npm run test"
+    "build": "npm run antlr && npm run test",
+    "start": "bun run run"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "antlr4ng": "^3.0.14"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.2"
   }
 }
