@@ -21,7 +21,12 @@ export class ChicoryParserVisitor {
         // A stmt could be an assignment or an expression
         if (ctx.assignStmt()) {
             return this.visitAssignStmt(ctx.assignStmt()!) + ";";
-        } else if (ctx.expr()) {
+        }
+        else if (ctx.typeDefinition()) {
+            // NOTE: we erase types from js, but we will need to visit to handle type-checking...
+            return ""
+        }
+        else if (ctx.expr()) {
             return this.visitExpr(ctx.expr()!) + ";";
         }
         throw new Error("Unknown stmt type");

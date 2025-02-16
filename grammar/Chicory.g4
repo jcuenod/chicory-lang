@@ -6,12 +6,44 @@ program
 
 stmt
     : assignStmt
+    | typeDefinition
     | expr
     ;
 
 assignStmt
     : assignKwd IDENTIFIER '=' expr
     ;
+
+typeDefinition
+    : 'type' IDENTIFIER '=' typeExpr
+    ;
+
+typeExpr
+    : adtType
+    | recordType
+    | tupleType
+    | primitiveType
+    ;
+
+adtType: NL* '|'? adtOption (NL* '|' adtOption )* NL*;
+
+adtOption
+    : IDENTIFIER '(' NL* '{' NL* adtTypeAnnotation (',' NL* adtTypeAnnotation) ','? NL* '}' NL* ')'
+    | IDENTIFIER '(' primitiveType ')'
+    | IDENTIFIER
+    ;
+
+adtTypeAnnotation: IDENTIFIER ':' (primitiveType | IDENTIFIER);
+
+recordType: '{' NL* recordTypeAnontation (',' NL* recordTypeAnontation)* ','? NL* '}';
+
+recordTypeAnontation: IDENTIFIER ':' (primitiveType | recordType | IDENTIFIER);
+
+tupleType: '[' NL* tupleField (',' NL* tupleField)* ','? NL* ']';
+
+tupleField: primitiveType | IDENTIFIER;
+
+primitiveType: 'number' | 'string' | 'boolean';
 
 expr: primaryExpr tailExpr*; 
 
