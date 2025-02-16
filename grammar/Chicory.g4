@@ -14,6 +14,7 @@ assignStmt
     : assignKwd IDENTIFIER '=' expr
     ;
 
+// TODO: Force type identifier to begin with uppercase letter
 typeDefinition
     : 'type' IDENTIFIER '=' typeExpr
     ;
