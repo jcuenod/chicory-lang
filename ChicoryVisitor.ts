@@ -80,6 +80,9 @@ export class ChicoryParserVisitor {
         else if (child instanceof parser.FuncExprContext) {
             return this.visitFuncExpr(child);
         }
+        else if (child instanceof parser.JsxExprContext) {
+            return this.visitJsxExpr(child);
+        }
         else if (child instanceof parser.MatchExprContext) {
             return this.visitMatchExpr(child);
         }
@@ -185,6 +188,60 @@ export class ChicoryParserVisitor {
         }
         this.indentLevel--;
         return "{\n" + block.join("\n") + "\n" + this.indent() + "}";
+    }
+
+    visitJsxExpr(ctx: parser.JsxExprContext) {
+        if (ctx.jsxSelfClosingElement()) {
+            return this.visitJsxSelfClosingElement(ctx.jsxSelfClosingElement()!);
+        }
+        const opening = this.visitJsxOpeningElement(ctx.jsxOpeningElement()!);
+        const children = ctx.jsxChild().map(child => this.visitJsxChild(child)).join("");
+        const closing = this.visitJsxClosingElement(ctx.jsxClosingElement()!);
+        return `${opening}${children}${closing}`;
+    }
+
+    visitJsxSelfClosingElement(ctx: parser.JsxSelfClosingElementContext) {
+        const tag = ctx.IDENTIFIER().getText();
+        const attrs = ctx.jsxAttributes() ? this.visitJsxAttributes(ctx.jsxAttributes()!) : "";
+        return `<${tag}${attrs} />`;
+    }
+
+    visitJsxOpeningElement(ctx: parser.JsxOpeningElementContext) {
+        const tag = ctx.IDENTIFIER().getText();
+        const attrs = ctx.jsxAttributes() ? this.visitJsxAttributes(ctx.jsxAttributes()!) : "";
+        return `<${tag}${attrs}>`;
+    }
+
+    visitJsxClosingElement(ctx: parser.JsxClosingElementContext) {
+        const tag = ctx.IDENTIFIER().getText();
+        return `</${tag}>`;
+    }
+
+    visitJsxAttributes(ctx: parser.JsxAttributesContext) {
+        return ctx.jsxAttribute().map(attr => this.visitJsxAttribute(attr)).join("");
+    }
+
+    visitJsxAttribute(ctx: parser.JsxAttributeContext) {
+        const name = ctx.IDENTIFIER().getText();
+        const value = ctx.jsxAttributeValue() ? this.visitJsxAttributeValue(ctx.jsxAttributeValue()!) : "";
+        return ` ${name}=${value}`;
+    }
+
+    visitJsxAttributeValue(ctx: parser.JsxAttributeValueContext) {
+        return ctx.getText();
+    }
+
+    visitJsxChild(ctx: parser.JsxChildContext) {
+        if (ctx instanceof parser.JsxChildJsxContext) {
+            return this.visitJsxExpr(ctx.jsxExpr());
+        }
+        else if (ctx instanceof parser.JsxChildExpressionContext) {
+            return "{" + this.visitExpr(ctx.expr()) + "}";
+        }
+        else if (ctx instanceof parser.JsxChildTextContext) {
+            return ctx.getText().trim();
+        }
+        throw new Error("Unknown JsxChildContext type");
     }
 
     visitIdentifier(ctx) {
