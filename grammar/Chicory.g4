@@ -19,6 +19,7 @@ primaryExpr
     : '(' expr ')'      #ParenExpression
     | ifExpr            #IfExpression
     | funcExpr          #FunctionExpression
+    | jsxExpr           #JsxExpression
     | matchExpr         #MatchExpression
     | IDENTIFIER        #IdentifierExpression
     | literal           #LiteralExpression
@@ -80,6 +81,43 @@ literal
     | TRUE_KWD | FALSE_KWD
     ;
 
+// TODO: Very simplistic handling of jsx...
+jsxExpr
+    : jsxOpeningElement NL* (NL* jsxChild)* NL* jsxClosingElement
+    | jsxSelfClosingElement
+    ;
+
+jsxOpeningElement
+    : '<' IDENTIFIER NL* jsxAttributes? NL* '>'
+    ;
+
+jsxClosingElement
+    : '</' IDENTIFIER '>'
+    ;
+
+jsxSelfClosingElement
+    : '<' IDENTIFIER NL* jsxAttributes? NL* '/>'
+    ;
+
+jsxAttributes
+    : jsxAttribute (NL* jsxAttribute)*
+    ;
+
+jsxAttribute
+    : IDENTIFIER '=' jsxAttributeValue
+    ;
+
+jsxAttributeValue
+    : '{' expr '}'
+    | STRING
+    | NUMBER
+    ;
+
+jsxChild
+    : jsxExpr       #JsxChildJsx
+    | '{' expr '}'  #JsxChildExpression
+    | ~('<' | '{')+ #JsxChildText
+    ;
 
 
 // LEXING
@@ -91,7 +129,7 @@ FALSE_KWD: 'false';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
-OPERATOR: '+' | '-' | '*' | '/' | '==' | '!=';
+OPERATOR: '+' | '-' | '*' | '/' | '==' | '!=' | '<' | '>' | '<=' | '>=' | '&&' | '||';
 
 // TODO: Handle escaping
 STRING: '"' (~["\n])* '"';
