@@ -1,4 +1,4 @@
-# Chicory
+# 🐣 Chicory
 
 > caffeine-free javascript
 
