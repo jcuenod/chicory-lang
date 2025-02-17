@@ -5,12 +5,11 @@
 Chicory is a functional-friendly javascript alternative that compiles to JSX.
 
 ```chicory
-let hello = (name) => {
+let hello = (name) =>
   match (name) {
-    "world" => { "Hello, WORLD!" },
-    _ => { "Hello, " + name + "!" }
+    "world" => <h1>Hello, WORLD!</h1>,
+    _ => <h1>Hello, {name}!</h1>,
   }
-}
 
 hello("world")      // "Hello, WORLD!"
 hello("Chicory")    // "Hello, Chicory!"

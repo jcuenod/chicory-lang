@@ -113,7 +113,7 @@ export class ChicoryParserVisitor {
             const child = ctx.expr()!.getChild(0);
             return child instanceof parser.BlockExpressionContext
                 ? this.visitBlockExpr(child.blockExpr())
-                : this.visitExpr(ctx.expr()!);
+                : "{ return " + this.visitExpr(ctx.expr()!) + " }";
         }
 
         return ifs.join("") + (ctx.expr() ? `(() => ${getElseExpr()})()` : "undefined");
@@ -125,7 +125,7 @@ export class ChicoryParserVisitor {
         const thenExpr = ctx.expr()[1].getChild(0);
         const block = thenExpr instanceof parser.BlockExpressionContext
             ? this.visitBlockExpr(thenExpr.blockExpr())
-            : this.visitExpr(ctx.expr()[1]);
+            : "{ return " + this.visitExpr(ctx.expr()[1]) + " }";
         
         return `(${condition}) ? (() => ${block})() : `;
     }
