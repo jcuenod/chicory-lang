@@ -6,10 +6,9 @@ Chicory is a functional-friendly type-safe Javascript alternative that compiles 
 
 ```chicory
 import { document } from "bindings/browser"
-import React from "bindings/react"
 import ReactDOM from "bindings/react-dom"
 
-const Hello = (name) =>
+const Hello = ({ name }) =>
   match (name) {
     "world" => <h1>Hello, WORLD!</h1>,
     _ => <h1>Hello, {name}!</h1>,
@@ -20,6 +19,8 @@ ReactDOM.render(
   document.getElementById("root")
 )
 ```
+
+This is a WIP and a PoC. Many of the features you see above are implemented. But there is tons still to do, and that will just be to see if the idea is worth pursuing (and has traction in the wider community).
 
 ## Why
 
@@ -47,5 +48,6 @@ Chicory is not as extensive as TS and doesn't aim to support all of JS. Instead,
 - [ ] Documentation
 - [ ] Language features (it's only a PoC right now)
 - [ ] Hindley-Milner type inference
+- [ ] Bindings to JS libraries and runtimes
 - [ ] Type checking
 - [ ] Syntax highlighting (so, probably a tree-sitter implementation)
