@@ -73,7 +73,7 @@ justIfExpr
     ;
 
 funcExpr
-    : '(' NL* parameterList? NL* ')' '=>' expr
+    : '(' NL* parameterList? NL* ')' '=>' NL* expr
     ;
 
 parameterList

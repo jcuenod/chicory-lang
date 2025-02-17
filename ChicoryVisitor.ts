@@ -136,7 +136,7 @@ export class ChicoryParserVisitor {
         const childExpr = ctx.expr().getChild(0);
         const block = childExpr instanceof parser.BlockExpressionContext
             ? this.visitBlockExpr(childExpr.blockExpr())
-            : this.visitExpr(ctx.expr()[1]);
+            : this.visitExpr(ctx.expr());
 
         return `(${params}) => ${block}`;
     }
@@ -181,12 +181,12 @@ export class ChicoryParserVisitor {
                 return this.visitBlockExpr(childExpr.blockExpr(), inject)
             }
 
-            const expr = this.visitExpr(ctx.expr()!)
+            const expr = "return " + this.visitExpr(ctx.expr()!)
             if (inject) {
                 this.indentLevel++
-                const blockBody = `${this.indent()}${inject}xxxx\n${this.indent()}${expr}`
+                const blockBody = `${this.indent()}${inject}\n${this.indent()}${expr}`
                 this.indentLevel--
-                return `\n${blockBody}\n${this.indent()}`
+                return `{\n${blockBody}\n${this.indent()}}`
             }
             return expr;
         }
