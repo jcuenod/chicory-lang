@@ -23,9 +23,9 @@ ReactDOM.render(
 
 ## Why
 
-If you've ever refactored a JS project, you probably wished you were using TS. But if you've ever refactored a TS project, you know that it's not as safe as would be ideal. Not only does `any` and `as` litter your codebase, but `null` and `undefined` still flow through the type system. Chicory aims to be a better alternative to both JS and TS.
+A "type-safe alternative to JS" sounds a lot like "typescript". If you've ever refactored a JS project, you probably wished you were using TS. But if you've ever refactored a TS project, you know that it's not as safe as you would like. Not only do `any` and `as` litter your codebase, but `null` and `undefined` still flow through the type system. Chicory aims to be a better alternative to both JS and TS. It's what TS could have been if it didn't try to support all of JS.
 
-It's not as extensive as TS and doesn't aim to support all of JS. Instead, it aims to be familiar to JS developers so that there's an easy onramp. But all the footguns are gone, so you know your code will work if it compiles.
+Chicory is not as extensive as TS and doesn't aim to support all of JS. Instead, it aims to be familiar to JS developers so that there's an easy onramp. But all the footguns are gone, so you know your code will work if it compiles. Because it compiles to JSX, you can use your build system, libraries and tools, and you can run it on your favorite JS runtime.
 
 ## Features
 
@@ -34,11 +34,12 @@ It's not as extensive as TS and doesn't aim to support all of JS. Instead, it ai
 - Algebraic data types
 - JSX support and compiles to JSX
 
-## Eventual Goals
+## Goals
 
 - Performant JS
 - Readable compiled JSX (? maybe this is not a goal)
-- Excellent interop story with the JS ecosystem
+- Easy bindings to JS libraries
+- JS FFI?
 
 ## TODO
 
