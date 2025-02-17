@@ -2,18 +2,30 @@
 
 > caffeine-free javascript
 
-Chicory is a functional-friendly javascript alternative that compiles to JSX.
+Chicory is a functional-friendly type-safe Javascript alternative that compiles to JSX.
 
 ```chicory
-let hello = (name) =>
+import { document } from "bindings/browser"
+import React from "bindings/react"
+import ReactDOM from "bindings/react-dom"
+
+const Hello = (name) =>
   match (name) {
     "world" => <h1>Hello, WORLD!</h1>,
     _ => <h1>Hello, {name}!</h1>,
   }
 
-hello("world")      // "Hello, WORLD!"
-hello("Chicory")    // "Hello, Chicory!"
+ReactDOM.render(
+  <Hello name="world" />,
+  document.getElementById("root")
+)
 ```
+
+## Why
+
+If you've ever refactored a JS project, you probably wished you were using TS. But if you've ever refactored a TS project, you know that it's not as safe as would be ideal. Not only does `any` and `as` litter your codebase, but `null` and `undefined` still flow through the type system. Chicory aims to be a better alternative to both JS and TS.
+
+It's not as extensive as TS and doesn't aim to support all of JS. Instead, it aims to be familiar to JS developers so that there's an easy onramp. But all the footguns are gone, so you know your code will work if it compiles.
 
 ## Features
 
