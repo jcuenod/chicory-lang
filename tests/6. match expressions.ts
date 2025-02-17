@@ -27,7 +27,7 @@ export const compiled = `
         return "forty two";
     }
     else if (__chicory_var_0.type === "Some") {
-        const x = __chicory_var_0.value
+        const x = __chicory_var_0.value;
         return (x == 10) ? (() => {
             return "ten";
         })() : (() => {

@@ -91,6 +91,9 @@ export class ChicoryParserVisitor {
         else if (child instanceof parser.MatchExprContext) {
             return this.visitMatchExpr(child);
         }
+        else if (child instanceof parser.BlockExprContext) {
+            return this.visitBlockExpr(child);
+        }
         else if (ctx.ruleContext instanceof parser.IdentifierExpressionContext) {
             return this.visitIdentifier(child);
         } 
@@ -105,19 +108,36 @@ export class ChicoryParserVisitor {
     // we will compile if expressions to ternary expressions with iife blocks
     visitIfElseExpr(ctx: parser.IfExprContext) {
         const ifs = ctx.justIfExpr().map(justIf => this.visitIfExpr(justIf));
-        const elseExpr = ctx.blockExpr() ? this.visitBlockExpr(ctx.blockExpr()!, true) : null;
-        return ifs.join("") + (elseExpr ? `(() => ${elseExpr})()` : "undefined");
+
+        const getElseExpr = () => {
+            const child = ctx.expr()!.getChild(0);
+            return child instanceof parser.BlockExpressionContext
+                ? this.visitBlockExpr(child.blockExpr())
+                : this.visitExpr(ctx.expr()!);
+        }
+
+        return ifs.join("") + (ctx.expr() ? `(() => ${getElseExpr()})()` : "undefined");
     }
 
     visitIfExpr(ctx: parser.JustIfExprContext) {
-        const condition = this.visitExpr(ctx.expr());
-        const block = this.visitBlockExpr(ctx.blockExpr(), true);
+        const condition = this.visitExpr(ctx.expr()[0])
+
+        const thenExpr = ctx.expr()[1].getChild(0);
+        const block = thenExpr instanceof parser.BlockExpressionContext
+            ? this.visitBlockExpr(thenExpr.blockExpr())
+            : this.visitExpr(ctx.expr()[1]);
+        
         return `(${condition}) ? (() => ${block})() : `;
     }
 
     visitFuncExpr(ctx: parser.FuncExprContext) {
         const params = ctx.parameterList() ? this.visitParameterList(ctx.parameterList()!) : "";
-        const block = this.visitBlockExpr(ctx.blockExpr(), true);
+
+        const childExpr = ctx.expr().getChild(0);
+        const block = childExpr instanceof parser.BlockExpressionContext
+            ? this.visitBlockExpr(childExpr.blockExpr())
+            : this.visitExpr(ctx.expr()[1]);
+
         return `(${params}) => ${block}`;
     }
 
@@ -150,8 +170,27 @@ export class ChicoryParserVisitor {
 
     visitMatchArm(ctx: parser.MatchArmContext, varName: string) {
         const {pattern, inject} = this.visitPattern(ctx.matchPattern(), varName);
-        const block = this.visitBlockExpr(ctx.blockExpr(), true, inject);
-        return `if (${pattern}) ${block}`;
+
+        const getBlock = () => {
+            const childExpr = ctx.expr().getChild(0);
+            if (!childExpr) {
+                return "";
+            }
+
+            if (childExpr instanceof parser.BlockExpressionContext) {
+                return this.visitBlockExpr(childExpr.blockExpr(), inject)
+            }
+
+            const expr = this.visitExpr(ctx.expr()!)
+            if (inject) {
+                this.indentLevel++
+                const blockBody = `${this.indent()}${inject}xxxx\n${this.indent()}${expr}`
+                this.indentLevel--
+                return `\n${blockBody}\n${this.indent()}`
+            }
+            return expr;
+        }
+        return `if (${pattern}) ${getBlock()}`;
     }
 
     visitPattern(ctx: parser.MatchPatternContext, varName: string) {
@@ -162,7 +201,7 @@ export class ChicoryParserVisitor {
             const [adtName, paramName] = (ctx as parser.AdtWithParamMatchPatternContext).IDENTIFIER().map(id => id.getText());
             return { 
                 pattern: `${varName}.type === "${adtName}"`,
-                inject: `const ${paramName} = ${varName}.value`
+                inject: `const ${paramName} = ${varName}.value;`
             };
         } else if (ctx.ruleContext instanceof parser.AdtWithLiteralMatchPatternContext) {
             const adtName = (ctx as parser.AdtWithLiteralMatchPatternContext).IDENTIFIER().getText();
@@ -177,20 +216,15 @@ export class ChicoryParserVisitor {
         throw new Error("Unknown match arm pattern type");
     }
 
-    visitBlockExpr(ctx: parser.BlockExprContext, returnLastExpr = false, inject = "") {
+    visitBlockExpr(ctx: parser.BlockExprContext, inject = "") {
         this.indentLevel++;
-        const stmts = ctx.stmt();
-        if (stmts.length === 0) {
-            return "";
-        }
-
-        const block = inject ? [this.indent() + inject] : []; 
-        block.push(...stmts.map(stmt => this.indent() + this.visitStmt(stmt)));     
-        if (stmts[stmts.length - 1].expr() instanceof parser.ExprContext && returnLastExpr) {
-            block.pop();
-            const finalExpr = this.visitExpr(stmts[stmts.length - 1].expr()!);
-            block.push(this.indent() + `return ${finalExpr};`);
-        }
+        const stmts = ctx.stmt()
+        const finalExpr = this.visitExpr(ctx.expr())
+        const block = [
+            ...inject ? [this.indent() + inject] : [],
+            ...stmts.map(stmt => this.indent() + this.visitStmt(stmt)),
+            this.indent() + `return ${finalExpr};`
+        ];
         this.indentLevel--;
         return "{\n" + block.join("\n") + "\n" + this.indent() + "}";
     }

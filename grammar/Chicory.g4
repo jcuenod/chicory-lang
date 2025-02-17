@@ -54,6 +54,7 @@ primaryExpr
     | funcExpr          #FunctionExpression
     | jsxExpr           #JsxExpression
     | matchExpr         #MatchExpression
+    | blockExpr         #BlockExpression
     | IDENTIFIER        #IdentifierExpression
     | literal           #LiteralExpression
     ;
@@ -65,14 +66,14 @@ tailExpr
     | OPERATOR expr     #OperationExpression
     ;
 
-ifExpr: justIfExpr ('else' justIfExpr)* ('else' blockExpr)?;
+ifExpr: justIfExpr ('else' justIfExpr)* ('else' expr)?;
 
 justIfExpr
-    : 'if' '(' expr ')' blockExpr
+    : 'if' '(' expr ')' expr
     ;
 
 funcExpr
-    : '(' NL* parameterList? NL* ')' '=>' blockExpr
+    : '(' NL* parameterList? NL* ')' '=>' expr
     ;
 
 parameterList
@@ -88,7 +89,7 @@ matchExpr
     ;
 
 matchArm
-    : matchPattern '=>' blockExpr
+    : matchPattern '=>' expr
     ;
 
 matchPattern
@@ -100,7 +101,7 @@ matchPattern
     ;
 
 blockExpr
-    : '{' NL* stmt (NL* stmt)* NL* '}'
+    : '{' NL* (stmt NL*)* expr NL* '}'
     ;
 
 assignKwd

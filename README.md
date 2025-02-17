@@ -23,8 +23,15 @@ hello("Chicory")    // "Hello, Chicory!"
 - Algebraic data types
 - JSX support and compiles to JSX
 
+## Eventual Goals
+
+- Performant JS
+- Readable compiled JSX (? maybe this is not a goal)
+- Excellent interop story with the JS ecosystem
+
 ## TODO
 
+- [ ] Vite plugin
 - [ ] Documentation
 - [ ] Language features (it's only a PoC right now)
 - [ ] Hindley-Milner type inference
