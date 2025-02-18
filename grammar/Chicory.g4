@@ -172,3 +172,6 @@ NUMBER: [0-9]+ ('.' [0-9]+)?;
 
 NL: '\n';
 WS: [ \r\n\t]+ -> channel(HIDDEN);
+
+COMMENT: '//' ~[\n]* -> channel(HIDDEN);
+MULTILINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
