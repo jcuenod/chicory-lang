@@ -1,12 +1,13 @@
 grammar Chicory;
 
 program
-    : NL* stmt (NL* stmt)* NL* EOF
+    : NL* stmt (NL* stmt)* NL* exportStmt? NL* EOF
     ;
 
 stmt
     : assignStmt
     | typeDefinition
+    | importStmt
     | expr
     ;
 
@@ -45,6 +46,20 @@ tupleType: '[' NL* tupleField (',' NL* tupleField)* ','? NL* ']';
 tupleField: primitiveType | IDENTIFIER;
 
 primitiveType: 'number' | 'string' | 'boolean';
+
+importStmt
+    : 'import' IDENTIFIER 'from' STRING
+    | 'import' IDENTIFIER ',' destructuringImportIdentifier 'from' STRING
+    | 'import' destructuringImportIdentifier 'from' STRING
+    ;
+
+destructuringImportIdentifier:
+    | '{' NL* IDENTIFIER (',' NL* IDENTIFIER)* NL* '}'
+    ;
+
+exportStmt
+    : 'export' '{' NL* IDENTIFIER (',' NL* IDENTIFIER)* ','? NL* '}'
+    ;
 
 expr: primaryExpr tailExpr*; 
 

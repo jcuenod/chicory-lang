@@ -14,7 +14,12 @@ export class ChicoryParserVisitor {
 
     visitProgram(ctx: parser.ProgramContext) {
         // a program is a list of stmts
-        return ctx.stmt().map(stmt => this.visitStmt(stmt)).join("\n");
+        const body = ctx.stmt().map(stmt => this.visitStmt(stmt)).join("\n");
+        if (!ctx.exportStmt()) {
+            return body
+        }
+        const exportStmt = this.visitExportStmt(ctx.exportStmt()!);
+        return body + "\n" + exportStmt;
     }
 
     visitStmt(ctx: parser.StmtContext) {
@@ -26,6 +31,9 @@ export class ChicoryParserVisitor {
             // NOTE: we erase types from js, but we will need to visit to handle type-checking...
             return ""
         }
+        else if (ctx.importStmt()) {
+            return this.visitImportStmt(ctx.importStmt()!) + ";";
+        }
         else if (ctx.expr()) {
             return this.visitExpr(ctx.expr()!) + ";";
         }
@@ -36,6 +44,25 @@ export class ChicoryParserVisitor {
         const assignKwd = ctx.assignKwd().getText(); // let or const
         const identifier = ctx.IDENTIFIER().getText();
         return assignKwd + " " + identifier + ' = ' + this.visitExpr(ctx.expr()!);
+    }
+
+    visitExportStmt(ctx: parser.ExportStmtContext) {
+        const identifiers = ctx.IDENTIFIER().map(id => id.getText()).join(", ");
+        return `export { ${identifiers} };`;
+    }
+    visitImportStmt(ctx: parser.ImportStmtContext) {
+        const defaultImport = ctx.IDENTIFIER() ? ctx.IDENTIFIER()!.getText() : "";
+        const destructuringImport = ctx.destructuringImportIdentifier() ? this.visitDestructuringImportIdentifier(ctx.destructuringImportIdentifier()!) : "";
+        const body = [defaultImport, destructuringImport].filter(Boolean).join(", ")
+        const from = ctx.STRING().getText();
+        return `import ${body} from ${from}`;
+    }
+
+    visitDestructuringImportIdentifier(ctx: parser.DestructuringImportIdentifierContext) {
+        const identifiers = ctx.IDENTIFIER()
+        return identifiers.length > 0 
+            ? `{ ${identifiers.map(id => id.getText()).join(", ")} }`
+            : "";
     }
 
     visitExpr(ctx: parser.ExprContext) {

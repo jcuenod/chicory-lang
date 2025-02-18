@@ -11,6 +11,7 @@ const tests = [
     './tests/8. jsx expressions',
     './tests/9. type definitions',
     './tests/10. comments',
+    './tests/11. imports and exports',
 ]
 
 tests.forEach(async path => {
