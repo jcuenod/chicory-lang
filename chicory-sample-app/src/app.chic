@@ -1,0 +1,11 @@
+import { useState } from "preact/hooks"
+
+const user = "world"
+
+const App = () =>
+    match (user) {
+      "world" => <h1>{"Hello WORLD!"}</h1>,
+      _ => <h1>{"Hello " + user}</h1>
+    }
+  
+export { App }
