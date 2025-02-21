@@ -1,7 +1,7 @@
 grammar Chicory;
 
 program
-    : NL* stmt (NL* stmt)* NL* exportStmt? NL* EOF
+    : NL* stmt (NL+ stmt)* (NL+ exportStmt)? NL* EOF
     ;
 
 stmt
