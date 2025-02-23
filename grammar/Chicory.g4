@@ -1,14 +1,15 @@
 grammar Chicory;
 
 program
-    : NL* stmt (NL+ stmt)* (NL+ exportStmt)? NL* EOF
+    : NL* stmt (NL* stmt)* (NL* exportStmt)? NL* EOF
     ;
 
+// NOTE: We don't just use NL in the program because stmts occur in blockExpr
 stmt
-    : assignStmt
-    | typeDefinition
-    | importStmt
-    | expr
+    : assignStmt NL
+    | typeDefinition NL
+    | importStmt NL
+    | expr NL
     ;
 
 assignStmt
@@ -186,7 +187,7 @@ STRING: '"' (~["\n])* '"';
 NUMBER: [0-9]+ ('.' [0-9]+)?;
 
 NL: '\n';
-WS: [ \r\n\t]+ -> channel(HIDDEN);
+WS: [ \r\t]+ -> channel(HIDDEN);
 
 COMMENT: '//' ~[\n]* -> channel(HIDDEN);
 MULTILINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
