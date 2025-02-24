@@ -18,9 +18,9 @@ tests.forEach(async path => {
     const {source, compiled} = await import(path)
     
     console.log(`Running test: ${path}`);
-    const compiledOutput = compile(source);
+    const { code } = compile(source) || { code: "", errors: [] };
 
-    if (compiledOutput.trim() === compiled.trim()){
+    if (code.trim() === compiled.trim()){
         console.log(' - Test passed\n');
     }
     else {
@@ -28,6 +28,6 @@ tests.forEach(async path => {
         console.log(' - Expected:');
         console.log(compiled);
         console.log(' - Got:');
-        console.log(compiledOutput + '\n');
+        console.log(code + '\n');
     }
 })
