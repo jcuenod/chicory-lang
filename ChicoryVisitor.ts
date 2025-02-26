@@ -147,7 +147,7 @@ export class ChicoryParserVisitor {
         } else if (child instanceof parser.BlockExprContext) {
             return this.visitBlockExpr(child);
         } else if (ctx.ruleContext instanceof parser.IdentifierExpressionContext) {
-            return this.visitIdentifier(child);
+            return this.visitIdentifier(ctx);
         } else if (child instanceof parser.LiteralContext) {
             return this.visitLiteral(child);
         }
@@ -228,25 +228,26 @@ export class ChicoryParserVisitor {
         return `if (${pattern}) ${getBlock()}`;
     }
 
+    // We need tons of work here, we need to disambiguate identifiers that are adts vs destructuring identifiers
     visitPattern(ctx: parser.MatchPatternContext, varName: string): { pattern: string; inject?: string } {
         if (ctx.ruleContext instanceof parser.BareAdtMatchPatternContext) {
-            const adtName = ctx.IDENTIFIER().getText();
+            const adtName = (ctx as parser.BareAdtMatchPatternContext).IDENTIFIER().getText();
             return { pattern: `${varName}.type === "${adtName}"` };
         } else if (ctx.ruleContext instanceof parser.AdtWithParamMatchPatternContext) {
-            const [adtName, paramName] = ctx.IDENTIFIER().map(id => id.getText());
+            const [adtName, paramName] = (ctx as parser.AdtWithParamMatchPatternContext).IDENTIFIER().map(id => id.getText());
             this.declareSymbol(paramName); // Register pattern variable
             return {
                 pattern: `${varName}.type === "${adtName}"`,
                 inject: `const ${paramName} = ${varName}.value;`
             };
         } else if (ctx.ruleContext instanceof parser.AdtWithLiteralMatchPatternContext) {
-            const adtName = ctx.IDENTIFIER().getText();
-            const literalValue = this.visitLiteral(ctx.literal());
+            const adtName = (ctx as parser.AdtWithLiteralMatchPatternContext).IDENTIFIER().getText();
+            const literalValue = this.visitLiteral((ctx as parser.AdtWithLiteralMatchPatternContext).literal());
             return { pattern: `${varName}.type === "${adtName}" && ${varName}.value === ${literalValue}` };
         } else if (ctx.ruleContext instanceof parser.WildcardMatchPatternContext) {
             return { pattern: "true" };
         } else if (ctx.ruleContext instanceof parser.LiteralMatchPatternContext) {
-            const literalValue = this.visitLiteral(ctx.literal());
+            const literalValue = this.visitLiteral((ctx as parser.LiteralMatchPatternContext).literal());
             return { pattern: `${varName} === ${literalValue}` };
         }
         this.reportError(`Unknown match pattern type: ${ctx.getText()}`, ctx);
