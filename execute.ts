@@ -14,7 +14,7 @@ if (!args) {
 const file = Bun.file(args);
 const source = await file.text();
 
-console.log(yellow(" ⚡ Compiling Chicory code (see /tmp/compiled.js) ⚡"))
+console.log(yellow(" ⚡ Compiling Chicory Source ⚡"))
 const {code, errors} = compile(source) || {code: "", errors: []}
 errors.forEach((error,index) => {
   console.error(`\nError ${index}:\n${JSON.stringify(error.range.start)}\n${JSON.stringify(error.message)}\n`)
@@ -22,9 +22,10 @@ errors.forEach((error,index) => {
  
 console.log(yellow(" ⚡ Executing ⚡"))
 
-// write to temp file:
-await Bun.write("/tmp/compiled.js", code)
-// run the compiled file:
-const {stdout} = Bun.spawn(["bun", "run", "/tmp/compiled.js"], {
-    stdout: "inherit"
+// run the compiled code:
+const proc = Bun.spawn(["bun", "run", "-"], {
+  stdin: "pipe",
+  stdout: "inherit"
 })
+proc.stdin.write(code)
+proc.stdin.end()
