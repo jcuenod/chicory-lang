@@ -1,15 +1,14 @@
 grammar Chicory;
 
 program
-    : NL* stmt (NL* stmt)* (NL* exportStmt)? NL* EOF
+    : NL* stmt (NL+ stmt)* (NL+ exportStmt)? NL* EOF
     ;
 
-// NOTE: We don't just use NL in the program because stmts occur in blockExpr
 stmt
-    : assignStmt NL
-    | typeDefinition NL
-    | importStmt NL
-    | expr NL
+    : assignStmt
+    | typeDefinition
+    | importStmt
+    | expr
     ;
 
 assignStmt
@@ -117,7 +116,7 @@ matchPattern
     ;
 
 blockExpr
-    : '{' NL* (stmt NL*)* expr NL* '}'
+    : '{' NL* (stmt NL+)* expr NL* '}'
     ;
 
 assignKwd
