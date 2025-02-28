@@ -44,10 +44,12 @@ Chicory is not as extensive as TS and doesn't aim to support all of JS. Instead,
 
 ## TODO
 
-- [ ] Vite plugin
-- [ ] Documentation
-- [ ] Language features (it's only a PoC right now)
+- [x] Vite plugin (wip) (https://github.com/chicory-lang/vite-plugin-chicory)
+- [ ] Documentation (wip) (https://chicory-lang.github.io/)
+- [ ] Language features & stabilization
 - [ ] Hindley-Milner type inference
 - [ ] Bindings to JS libraries and runtimes
-- [ ] Type checking
-- [ ] Syntax highlighting (so, probably a tree-sitter implementation)
+- [ ] Type checking (wip)
+- [x] Syntax highlighting
+    - [x] Tree-sitter (wip) (https://github.com/chicory-lang/tree-sitter-chicory)
+    - [ ] Textmate (wip)
