@@ -1,5 +1,8 @@
-export const source = `
-match (a) {
+import { expect, test } from "bun:test";
+import compile from "../compile";
+
+test("match an ADT", () => {
+  const { code } = compile(`match (a) {
     None => { "nothing" },
     Some(42) => { "forty two" },
     Some(x) => {
@@ -9,16 +12,8 @@ match (a) {
             "small"
         }
     }
-}
-match (b) {
-    "hi" => { "hello" },
-    "bye" => { "goodbye" },
-    _ => { "what?" }
-}
-`
-
-export const compiled = `
-(() => {
+}`);
+  expect(code).toBe(`(() => {
     const __chicory_var_0 = a;
     if (__chicory_var_0.type === "None") {
         return "nothing";
@@ -34,17 +29,25 @@ export const compiled = `
             return "small";
         })();
     }
-})();
-(() => {
-    const __chicory_var_1 = b;
-    if (__chicory_var_1 === "hi") {
+})();`);
+});
+
+test("match a string literal", () => {
+  const { code } = compile(`match (b) {
+    "hi" => { "hello" },
+    "bye" => { "goodbye" },
+    _ => { "what?" }
+}`);
+  expect(code).toBe(`(() => {
+    const __chicory_var_0 = b;
+    if (__chicory_var_0 === "hi") {
         return "hello";
     }
-    else if (__chicory_var_1 === "bye") {
+    else if (__chicory_var_0 === "bye") {
         return "goodbye";
     }
     else if (true) {
         return "what?";
     }
-})();
-`
+})();`);
+});

@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
-    "test": "npx tsx ./test.ts",
-    "build": "npm run antlr && npm run test",
-    "start": "bun run run"
+    "test": "bun test",
+    "build": "bun run antlr && bun test",
+    "exec": "bun run execute"
   },
   "keywords": [],
   "author": "",
