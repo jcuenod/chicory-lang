@@ -22,25 +22,50 @@ ReactDOM.render(
 
 This is a WIP and a PoC. Many of the features you see above are implemented. But there is tons still to do, and that will just be to see if the idea is worth pursuing (and has traction in the wider community).
 
-## Why
+
+## About
+
+### Why
 
 A "type-safe alternative to JS" sounds a lot like "typescript". If you've ever refactored a JS project, you probably wished you were using TS. But if you've ever refactored a TS project, you know that it's not as safe as you would like. Not only do `any` and `as` litter your codebase, but `null` and `undefined` still flow through the type system. Chicory aims to be a better alternative to both JS and TS. It's what TS could have been if it didn't try to support all of JS.
 
 Chicory is not as extensive as TS and doesn't aim to support all of JS. Instead, it aims to be familiar to JS developers so that there's an easy onramp. But all the footguns are gone, so you know your code will work if it compiles. Because it compiles to JSX, you can use your build system, libraries and tools, and you can run it on your favorite JS runtime.
 
-## Features
+### Features
 
 - If expressions
 - Match expressions for pattern matching
 - Algebraic data types
 - JSX support and compiles to JSX
 
-## Goals
+### Goals
 
 - Performant JS
 - Readable compiled JSX (? maybe this is not a goal)
 - Easy bindings to JS libraries
 - JS FFI?
+
+## Usage
+
+The compiler currently runs in TS and is being developed with bun (because it's fast, supports TS, and has built in testing)
+
+### Developing the Compiler
+
+To regenerate ANTLR4 files from the grammar and run tests:  
+
+```
+bun run build
+```
+
+### Testing Chicory Code
+
+If you have a `.chic` file that you would like to try to execute, you can use the `exec` helper function. This function will attempt to compile and run your code. 
+
+```
+bun run exec ./sample.chic
+```
+
+**Note**: Right now errors from the type-checker while compiling will not prevent this script from trying to run your code. This means that JS interop is super easy ;) (but there's not type-checking going on).
 
 ## TODO
 
