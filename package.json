@@ -6,7 +6,7 @@
   "scripts": {
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "bun test",
-    "generate:types": "bun x --package typescript tsc --emitDeclarationOnly --declaration --skipLibCheck --outDir ./build compile.ts",
+    "generate:types": "bun x --package typescript --emitDeclarationOnly --declaration --skipLibCheck --outDir ./build compile.ts",
     "build": "bun run antlr && bun test && bun run generate:types && bun build ./compile.ts --outdir ./build",
     "exec": "bun run execute"
   },
