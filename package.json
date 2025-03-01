@@ -1,6 +1,6 @@
 {
   "name": "@chicory-lang/compiler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A compiler for the Chicory language.",
   "main": "build/compile.js",
   "scripts": {
