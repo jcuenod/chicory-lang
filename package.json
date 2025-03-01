@@ -6,7 +6,7 @@
   "scripts": {
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "bun test",
-    "build": "bun run antlr && bun test",
+    "build": "bun run antlr && bun test && bun build ./compile.ts --outdir ./build",
     "exec": "bun run execute"
   },
   "keywords": [],
