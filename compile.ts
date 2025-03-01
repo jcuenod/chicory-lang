@@ -13,14 +13,37 @@ const getRange = (ctx: ParserRuleContext, tokenStream: TokenStream) => {
     }
 }
 
+export type LspRange = {
+    start: {
+        line: number;
+        character: number;
+    };
+    end: {
+        line: number;
+        character: number;
+    };
+};
+
+export type LspDiagnostic = {
+    severity: number;
+    message: string;
+    range: LspRange;
+    source: string;
+}
+
 const compilerErrorToLspError = tokenStream => (e => ({
     severity: 1, // 1 is error
-    message: e.message,
+    message: e.message as string,
     range: getRange(e.context, tokenStream),
     source: "chicory",
 }))
 
-export default (source: string) => {
+export type CompileResult = {
+    code: string;
+    errors: LspDiagnostic[];
+}
+
+export default (source: string): CompileResult => {
     if (!source.trim()) {
         return { code: "", errors: [] }
     }
