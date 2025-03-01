@@ -47,9 +47,38 @@ Chicory is not as extensive as TS and doesn't aim to support all of JS. Instead,
 
 ## Usage
 
-The compiler currently runs in TS and is being developed with bun (because it's fast, supports TS, and has built in testing)
+### NPM
 
-### Developing the Compiler
+You can use the compiler by downloading it from npm.
+
+```
+npm install @chicory-lang/compiler
+```
+
+Then you can use it in your code like this:
+
+```
+import { compile } from '@chicory-lang/compiler';
+
+const code = `
+  const a = {
+    const x = 1
+    const y = 2
+    const z = x + y
+    z
+  }
+`;
+
+const result = compile(code);
+
+console.log(result);
+```
+
+### Development
+
+The compiler currently runs in TS and is being developed with the Bun JS runtime (because it's fast, supports TS, and has built in testing). If you would like to contribute towards compiler, development, you will need to set up Bun first.
+
+#### Building
 
 To regenerate ANTLR4 files from the grammar and run tests:  
 
@@ -57,7 +86,7 @@ To regenerate ANTLR4 files from the grammar and run tests:
 bun run build
 ```
 
-### Testing Chicory Code
+#### Executing
 
 If you have a `.chic` file that you would like to try to execute, you can use the `exec` helper function. This function will attempt to compile and run your code. 
 
@@ -66,6 +95,8 @@ bun run exec ./sample.chic
 ```
 
 **Note**: Right now errors from the type-checker while compiling will not prevent this script from trying to run your code. This means that JS interop is super easy ;) (but there's not type-checking going on).
+
+### Running the Compiler
 
 ## TODO
 
