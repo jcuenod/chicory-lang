@@ -19,20 +19,20 @@ test("assign arrays", () => {
 test("return record in if expr", () => {
   const { code } = compile(`if (true) { a: "one", b: true, c: 3, d: four }`);
   expect(code).toBe(
-    `(() => { if (true) { return { a: "one", b: true, c: 3, d: four }; }})();`
+    `(true) ? (() => { return { a: "one", b: true, c: 3, d: four }; })() : undefined;`
   );
 });
 
-test("return record in match arm", () => {
+test("return record in match arm (as expr and as expr in blockExpr)", () => {
   const { code } = compile(`match (str) { 
     "hello" => { a: "one", b: true, c: 3, d: four },
     _ => { { a: "one", b: true, c: 3, d: four } }
 }`);
+
+  // note: as an expr in a block expr, we expect newlines...
   expect(code).toBe(`(() => {
     const __chicory_var_0 = str;
-    if (__chicory_var_0 === "hello") {
-        return { a: "one", b: true, c: 3, d: four };
-    }
+    if (__chicory_var_0 === "hello") return { a: "one", b: true, c: 3, d: four };
     else if (true) {
         return { a: "one", b: true, c: 3, d: four };
     }

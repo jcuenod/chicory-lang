@@ -146,6 +146,10 @@ export class ChicoryParserVisitor {
             return this.visitMatchExpr(child);
         } else if (child instanceof parser.BlockExprContext) {
             return this.visitBlockExpr(child);
+        } else if (child instanceof parser.RecordExprContext) {
+            return this.visitRecordExpr(child);
+        } else if (child instanceof parser.ArrayLikeExprContext) {
+            return this.visitArrayLikeExpr(child);
         } else if (ctx.ruleContext instanceof parser.IdentifierExpressionContext) {
             return this.visitIdentifier(ctx);
         } else if (child instanceof parser.LiteralContext) {
@@ -216,7 +220,7 @@ export class ChicoryParserVisitor {
             if (childExpr instanceof parser.BlockExpressionContext) {
                 return this.visitBlockExpr(childExpr.blockExpr(), inject);
             }
-            const expr = `return ${this.visitExpr(ctx.expr())}`;
+            const expr = `return ${this.visitExpr(ctx.expr())};`;
             if (inject) {
                 this.indentLevel++;
                 const blockBody = `${this.indent()}${inject}\n${this.indent()}${expr}`;
@@ -267,6 +271,22 @@ export class ChicoryParserVisitor {
         this.indentLevel--;
         this.exitScope();
         return `{\n${block.join("\n")}\n${this.indent()}}`;
+    }
+
+    visitRecordExpr(ctx: parser.RecordExprContext): string {
+        const kvs = ctx.recordKvExpr().map(kv => this.visitRecordKvExpr(kv));
+        return `{ ${kvs.join(", ")} }`;
+    }
+
+    visitRecordKvExpr(ctx: parser.RecordKvExprContext): string {
+        const key = ctx.IDENTIFIER().getText();
+        const value = this.visitExpr(ctx.expr());
+        return `${key}: ${value}`;
+    }
+
+    visitArrayLikeExpr(ctx: parser.ArrayLikeExprContext): string {
+        const elements = ctx.expr().map(expr => this.visitExpr(expr));
+        return `[${elements.join(", ")}]`;
     }
 
     visitJsxExpr(ctx: parser.JsxExprContext): string {

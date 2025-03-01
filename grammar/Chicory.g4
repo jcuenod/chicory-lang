@@ -70,6 +70,8 @@ primaryExpr
     | jsxExpr           #JsxExpression
     | matchExpr         #MatchExpression
     | blockExpr         #BlockExpression
+    | recordExpr        #RecordExpression
+    | arrayLikeExpr     #ArrayLikeExpression
     | IDENTIFIER        #IdentifierExpression
     | literal           #LiteralExpression
     ;
@@ -117,6 +119,16 @@ matchPattern
 
 blockExpr
     : '{' NL* (stmt NL+)* expr NL* '}'
+    ;
+
+recordExpr
+    : '{' NL* (recordKvExpr (',' NL* recordKvExpr)*)? ','? NL* '}'
+    ;
+
+recordKvExpr: IDENTIFIER ':' expr;
+
+arrayLikeExpr
+    : '[' NL* (expr NL* (',' NL* expr)*)? NL* ','? NL* ']'
     ;
 
 assignKwd
