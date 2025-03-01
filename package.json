@@ -1,17 +1,34 @@
 {
-  "name": "chicory",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@chicory-lang/compiler",
+  "version": "0.0.1",
+  "description": "A compiler for the Chicory language.",
+  "main": "build/compile.js",
   "scripts": {
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "bun test",
     "build": "bun run antlr && bun test && bun build ./compile.ts --outdir ./build",
     "exec": "bun run execute"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "compiler",
+    "language",
+    "chicory",
+    "parser",
+    "programming language"
+  ],
+  "author": "James Cuénod",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chicory-lang/chicory"
+  },
+  "homepage": "https://chicory-lang.github.io/",
+  "bugs": {
+    "url": "https://github.com/chicory-lang/chicory/issues"
+  },
+  "files": [
+    "build"
+  ],
   "dependencies": {
     "antlr4ng": "^3.0.14"
   },
