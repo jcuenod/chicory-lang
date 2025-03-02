@@ -2,7 +2,6 @@
   "name": "@chicory-lang/compiler",
   "version": "0.0.2",
   "description": "A compiler for the Chicory language.",
-  "main": "build/compile.js",
   "scripts": {
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "bun test",
@@ -11,7 +10,16 @@
     "exec": "bun run execute"
   },
   "type": "module",
+  "module": "build/compile.js",
   "types": "build/compile.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./build/compile.d.ts",
+        "default": "./build/compile.js"
+      }
+    }
+  },
   "keywords": [
     "compiler",
     "language",
