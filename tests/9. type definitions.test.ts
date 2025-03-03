@@ -3,7 +3,7 @@ import compile from "../compile";
 
 test("primitive type", () => {
   const { code } = compile(`type MyPrimitiveType = string`);
-  expect(code).toBe(``);
+  expect(code).toBe(`/* Type Erasure: MyPrimitiveType */`);
 });
 
 test("record type", () => {
@@ -11,17 +11,17 @@ test("record type", () => {
   name: str,
   age: int,
 }`);
-  expect(code).toBe(``);
+  expect(code).toBe(`/* Type Erasure: MyRecord */`);
 });
 
 test("tuple type", () => {
   const { code } = compile(`type MyTuple = [int, str, Person]`);
-  expect(code).toBe(``);
+  expect(code).toBe(`/* Type Erasure: MyTuple */`);
 });
 
 test("enum type", () => {
   const { code } = compile(`type MyEnum = Option1 | Option2 | Option3`);
-  expect(code).toBe(``);
+  expect(code).toBe(`/* Type Erasure: MyEnum */`);
 });
 
 test("adt type", () => {
@@ -30,5 +30,5 @@ test("adt type", () => {
     | ValueB({width: number, height: number})
     | ValueC(SomeType)
     | ValueD`);
-  expect(code).toBe(``);
+  expect(code).toBe(`/* Type Erasure: MyAdt */`);
 });

@@ -57,8 +57,8 @@ export class ChicoryParserVisitor {
         if (ctx.assignStmt()) {
             return `${this.visitAssignStmt(ctx.assignStmt()!)};`;
         } else if (ctx.typeDefinition()) {
-            // Type definitions are erased in JS output but visited for symbols
-            return ""; // Placeholder for type checking later
+            // No semi-colon for type definitions
+            return `${this.visitTypeDefinition(ctx.typeDefinition()!)}`;
         } else if (ctx.importStmt()) {
             return `${this.visitImportStmt(ctx.importStmt()!)};`;
         } else if (ctx.expr()) {
@@ -79,6 +79,11 @@ export class ChicoryParserVisitor {
     visitExportStmt(ctx: parser.ExportStmtContext): string {
         const identifiers = ctx.IDENTIFIER().map(id => id.getText()).join(", ");
         return `${this.indent()}export { ${identifiers} };`;
+    }
+
+    visitTypeDefinition(ctx: parser.TypeDefinitionContext): string {
+        const name = ctx.IDENTIFIER().getText();
+        return `${this.indent()}/* Type Erasure: ${name} */`; // Placeholder for type checking later
     }
 
     visitImportStmt(ctx: parser.ImportStmtContext): string {
