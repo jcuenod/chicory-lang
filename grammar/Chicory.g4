@@ -31,6 +31,7 @@ adtType: NL* '|'? adtOption (NL* '|' adtOption )* NL*;
 
 adtOption
     : IDENTIFIER '(' NL* '{' NL* adtTypeAnnotation (',' NL* adtTypeAnnotation) ','? NL* '}' NL* ')'
+    | IDENTIFIER '(' IDENTIFIER ')'
     | IDENTIFIER '(' primitiveType ')'
     | IDENTIFIER
     ;
