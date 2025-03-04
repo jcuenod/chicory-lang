@@ -6,7 +6,7 @@
     "antlr": "antlr4ng -Dlanguage=TypeScript -o generated/ -visitor -Xexact-output-dir grammar/Chicory.g4",
     "test": "bun test",
     "generate:types": "bun x --package typescript --emitDeclarationOnly --declaration --skipLibCheck --outDir ./build compile.ts",
-    "build": "bun run antlr && bun test && bun run generate:types && bun build ./compile.ts --outdir ./build",
+    "build": "bun run antlr && bun test && bun run generate:types && bun build ./compile.ts --outdir=build && bun build ./compile.ts --format cjs --outfile=build/compile.cjs",
     "exec": "bun run execute"
   },
   "type": "module",
@@ -17,6 +17,10 @@
       "import": {
         "types": "./build/compile.d.ts",
         "default": "./build/compile.js"
+      },
+      "require": {
+        "types": "./build/compile.d.ts",
+        "default": "./build/compile.cjs"
       }
     }
   },
