@@ -88,6 +88,7 @@ export class ChicoryParserVisitor {
 
     visitImportStmt(ctx: parser.ImportStmtContext): string {
         const defaultImport = ctx.IDENTIFIER() ? ctx.IDENTIFIER()!.getText() : "";
+        this.declareSymbol(defaultImport);
         const destructuring = ctx.destructuringImportIdentifier()
             ? this.visitDestructuringImportIdentifier(ctx.destructuringImportIdentifier()!)
             : "";
@@ -98,6 +99,7 @@ export class ChicoryParserVisitor {
 
     visitDestructuringImportIdentifier(ctx: parser.DestructuringImportIdentifierContext): string {
         const identifiers = ctx.IDENTIFIER();
+        identifiers.forEach(id => this.declareSymbol(id.getText()));
         return identifiers.length > 0
             ? `{ ${identifiers.map(id => id.getText()).join(", ")} }`
             : "";
