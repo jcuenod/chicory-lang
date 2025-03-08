@@ -1,10 +1,12 @@
 import { ParserRuleContext } from 'antlr4ng';
 import * as parser from './generated/ChicoryParser';
+import { ChicoryTypeChecker } from './ChicoryTypeCheckerVisitor';
+import { CompilationError } from './env';
 
 type SymbolEntry = { name: string; scopeLevel: number };
-type CompilationError = { message: string; context: ParserRuleContext };
 
 export class ChicoryParserVisitor {
+    private typeChecker = new ChicoryTypeChecker();
     private indentLevel: number = 0;
     private scopeLevel: number = 0;
     private uniqueVarCounter: number = 0;
@@ -369,7 +371,15 @@ export class ChicoryParserVisitor {
         this.symbols = []; // Reset symbols per compilation
         this.uniqueVarCounter = 0; // Reset variable counter
         this.scopeLevel = 0; // Reset scope level
+        
+        // Run type checker
+        const {errors,symbols} = this.typeChecker.check(ctx)
+        const typeErrors = errors.map(err => ({
+            message: `Type error: ${err.message}`,
+            context: err.context
+        }));
+
         const code = this.visitProgram(ctx);
-        return { code, errors: this.errors };
+        return { code, errors: [...this.errors, ...typeErrors] };
     }
 }

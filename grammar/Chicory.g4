@@ -30,10 +30,10 @@ typeExpr
 adtType: NL* '|'? adtOption (NL* '|' adtOption )* NL*;
 
 adtOption
-    : IDENTIFIER '(' NL* '{' NL* adtTypeAnnotation (',' NL* adtTypeAnnotation) ','? NL* '}' NL* ')'
-    | IDENTIFIER '(' IDENTIFIER ')'
-    | IDENTIFIER '(' primitiveType ')'
-    | IDENTIFIER
+    : IDENTIFIER '(' NL* '{' NL* adtTypeAnnotation (',' NL* adtTypeAnnotation) ','? NL* '}' NL* ')' #AdtOptionAnonymousRecord
+    | IDENTIFIER '(' IDENTIFIER ')'                                                                 #AdtOptionNamedType
+    | IDENTIFIER '(' primitiveType ')'                                                              #AdtOptionPrimitiveType
+    | IDENTIFIER                                                                                    #AdtOptionNoArg
     ;
 
 adtTypeAnnotation: IDENTIFIER ':' (primitiveType | IDENTIFIER);
@@ -65,8 +65,7 @@ exportStmt
 expr: primaryExpr tailExpr*; 
 
 primaryExpr
-    : '(' expr ')'      #ParenExpression
-    | ifExpr            #IfExpression
+    : ifExpr            #IfExpression
     | funcExpr          #FunctionExpression
     | jsxExpr           #JsxExpression
     | matchExpr         #MatchExpression
@@ -75,6 +74,7 @@ primaryExpr
     | arrayLikeExpr     #ArrayLikeExpression
     | IDENTIFIER        #IdentifierExpression
     | literal           #LiteralExpression
+    | '(' expr ')'      #ParenExpression
     ;
 
 tailExpr
@@ -138,9 +138,10 @@ assignKwd
     ;
 
 literal
-    : STRING
-    | NUMBER
-    | TRUE_KWD | FALSE_KWD
+    : STRING    #StringLiteral
+    | NUMBER    #NumberLiteral
+    | TRUE_KWD  #BooleanLiteral
+    | FALSE_KWD #BooleanLiteral
     ;
 
 // TODO: Very simplistic handling of jsx...
